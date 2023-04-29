@@ -176,4 +176,10 @@ class ZXEnvironment(object):
             "--max_depth", type=int, default=20, help="maximum depth"
         )
         
+        parser.add_argument(
+            "--max_int", type=int, default=200, help="maximum depth"
+        )
+        parser.add_argument(
+            "--max_nodes", type=int, default=100, help="maximum depth"
+        )
         
