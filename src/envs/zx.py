@@ -32,7 +32,6 @@ class InvalidPrefixExpression(Exception):
     def __str__(self):
         return repr(self.data)
 
-
 class ZXEnvironment(object):
 
     TRAINING_TASKS = {"simplify"}
@@ -80,14 +79,11 @@ class ZXEnvironment(object):
             return None
         return x, y
 
-    # TODO
     def decode_class(self, i):
-        if i>=1000:
-            return str(i//1000)+"-"+str(i%1000)
-        return str(i)
-    # TODO
+        return f"{i%100}-{(i+1)*100}"
+
     def code_class(self, xi, yi):
-        return int(yi[0])
+        return int(len(xi))//100
 
     def check_prediction(self, src, tgt, hyp):
         h = self.encoder.decode(hyp)

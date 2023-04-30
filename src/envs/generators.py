@@ -34,8 +34,8 @@ class Graphs(Generator):
         qubits = rng.randint(self.min_qubits, self.max_qubits + 1)
         depth = rng.randint(self.min_depth, self.max_depth + 1)
         circ = cliffords(qubits, depth)
-        circ = pyzx.to_gh(circ)
-
+        pyzx.to_gh(circ)
+        
         simp = circ.copy()
         pyzx.full_reduce(simp)
         return circ, simp
