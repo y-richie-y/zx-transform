@@ -42,7 +42,7 @@ class Graph(Encoder):
         for key in types_dict.keys():
             toks.extend([str(types_dict[key]), str(int(phases_dict[key] * 4))]) 
         for edge in circ.edges():
-            toks.append(circ.edge_type(edge))
+            toks.append(str(circ.edge_type(edge)))
             toks.extend([f"N{indices.index(x)}" for x in edge])
         return toks
 

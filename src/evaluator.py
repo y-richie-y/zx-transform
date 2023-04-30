@@ -151,8 +151,6 @@ class Evaluator(object):
         n_valid_d1 = 0
         n_valid_d2 = 0
         n_valid_d3 = 0
-        if env.operation == 'gcd':
-            n_pairs = torch.zeros((102,102), dtype=torch.long)
 
         # iterator
         iterator = self.env.create_test_iterator(
@@ -206,9 +204,6 @@ class Evaluator(object):
                 tgt = idx_to_infix(env, x2[1 : len2[i] - 1, i].tolist(), False)
                 if valid[i]:
                     beam_log[i] = {"src": src, "tgt": tgt, "hyps": [(tgt, None, True)]}
-                    if env.operation == 'gcd':
-                        result = (nb_ops[i] % 1000) if (nb_ops[i] % 1000) < 101 else 101
-                        n_pairs[result][result] += 1
 
             # stats
             xe_loss += loss.item() * len(y)
@@ -292,10 +287,6 @@ class Evaluator(object):
                 is_valid3 = gen["is_valid3"]
                 is_valid4 = gen["is_valid4"]
                 is_b_valid = is_valid > 0
-                if env.operation == 'gcd' and not valid[i]:
-                    result = (nb_ops[i] % 1000) if (nb_ops[i] % 1000) < 101 else 101
-                    prediction = 101 if (is_valid4 is None or is_valid4 > 101) else is_valid4
-                    n_pairs[result][prediction] += 1
                 if is_valid > 0 and not valid[i]:
                     n_correct += 1
                     n_valid[nb_ops[i]] += 1
@@ -353,13 +344,6 @@ class Evaluator(object):
             100.0 * (n_perfect_match + n_valid_d3) / _n_total
         )
 
-        if env.operation == 'gcd':
-            logger.info("predicted pairs")
-            for i in range(102):
-                for j in range(102):
-                    if n_pairs[i][j].item() > 0:
-                        logger.info(f"{i}-{j}: {n_pairs[i][j].item()} ")
-                        
         # per class perplexity and prediction accuracy
         for i in range(len(n_total)):
             if n_total[i].item() == 0:

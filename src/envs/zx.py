@@ -38,7 +38,6 @@ class ZXEnvironment(object):
 
     def __init__(self, params):
         self.max_len = params.max_len
-        self.operation = params.operation
         
         self.encoder = encoders.Graph(params)
         self.generator = generators.Graphs(params)
@@ -157,9 +156,6 @@ class ZXEnvironment(object):
         Register environment parameters.
         """
         parser.add_argument(
-            "--operation", type=str, default="fraction_compare", help="Operation to perform"
-        )
-        parser.add_argument(
             "--min_qubits", type=int, default=1, help="min nr of cubits"
         )
         parser.add_argument(
@@ -173,9 +169,9 @@ class ZXEnvironment(object):
         )
         
         parser.add_argument(
-            "--max_int", type=int, default=200, help="maximum depth"
+            "--max_int", type=int, default=1000, help="maximum depth"
         )
         parser.add_argument(
-            "--max_nodes", type=int, default=100, help="maximum depth"
+            "--max_nodes", type=int, default=1000, help="maximum depth"
         )
         
