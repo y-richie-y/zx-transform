@@ -87,11 +87,10 @@ class ZXEnvironment(object):
     def check_prediction(self, src, tgt, hyp):
         h = self.encoder.decode(hyp)
         s = self.encoder.decode(src)
+        t = self.encoder.decode(tgt)
         if h is None:
-            return 0,0,0,0
-        if self.generator.evaluate(s,None,h):
-            return 1,1,1,1
-        return 0, 0, 0, 1
+            return -1,-1,-1,-1
+        return self.generator.evaluate(s,t,h)
 
     def create_train_iterator(self, task, data_path, params):
         """

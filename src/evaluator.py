@@ -44,14 +44,14 @@ def check_hypothesis(eq):
     try:
         m, s1, s2, nb = env.check_prediction(src, tgt, hyp)
     except Exception:
-        m = 0
-        s1 = 0
-        s2 = 0
-        nb = 0
+        m = -1
+        s1 = -1
+        s2 = -1
+        nb = -1
     eq["is_valid"] = m
     eq["is_valid2"] = s1
     eq["is_valid3"] = s2
-    eq["is_valid4"] = nb if not nb is None else 0
+    eq["is_valid4"] = nb
     return eq
 
 
@@ -287,18 +287,19 @@ class Evaluator(object):
                 is_valid3 = gen["is_valid3"]
                 is_valid4 = gen["is_valid4"]
                 is_b_valid = is_valid > 0
-                if is_valid > 0 and not valid[i]:
-                    n_correct += 1
-                    n_valid[nb_ops[i]] += 1
-                    valid[i] = 1
-                
                 if not valid[i]:
-                    if is_valid2 > 0:
-                        n_valid_d1 += 1
-                    if is_valid3 > 0:
-                        n_valid_d2 += 1
-                    if is_valid4 > 0:
-                        n_valid_d3 += 1
+                    if is_valid >= 0:
+                        n_correct += 1
+                    if is_valid > 0:
+                        n_valid[nb_ops[i]] += 1
+                        valid[i] = 1
+                
+                        if is_valid2 < is_valid4:
+                            n_valid_d1 += 1
+                        if is_valid2 <= (is_valid3 + is_valid4)/2:
+                            n_valid_d2 += 1
+                        if is_valid2 <= is_valid3:
+                            n_valid_d3 += 1
 
                 # update beam log
                 beam_log[i]["hyps"].append((gen["hyp"], None, is_b_valid))  # gen["score"], is_b_valid))
@@ -571,17 +572,19 @@ class Evaluator(object):
                     is_valid3 = gen["is_valid3"]
                     is_valid4 = gen["is_valid4"]
                     is_b_valid = is_valid > 0
-                    if is_valid > 0 and not valid[i]:
-                        curr_correct = 1
-                        curr_valid = 1
-
+                    
                     if not valid[i]:
-                        if is_valid2 > 0:
-                            curr_d1 = 1
-                        if is_valid3 > 0:
-                            curr_d2 = 1
-                        if is_valid4 > 0:
-                            curr_d3 = 1
+                        if is_valid >= 0:
+                            curr_correct = 1
+                        if is_valid > 0:
+                            curr_valid = 1
+
+                            if is_valid2 < is_valid4:
+                                curr_d1 = 1
+                            if is_valid2 <= (is_valid3 + is_valid4)/2:
+                                curr_d2 = 1
+                            if is_valid2 <= is_valid3:
+                                curr_d3 = 1
 
                     # update beam log
                     beam_log[i]["hyps"].append((gen["hyp"], gen["score"], is_b_valid))

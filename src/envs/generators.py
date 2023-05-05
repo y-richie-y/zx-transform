@@ -41,7 +41,11 @@ class Graphs(Generator):
         return circ, simp
 
     def evaluate(self, src, tgt, hyp):
-        t = hyp.verify_equality(src)
-        if t:
-            return 0, 0, 0, 0
-        return -1,-1,-1,-1
+        e = src + hyp.adjoint()
+        pyzx.full_reduce(e)
+        if e.is_id():
+            nodes_s = src.num_vertices()
+            nodes_t = tgt.num_vertices()
+            nodes_h = hyp.num_vertices()
+            return 1, nodes_h, nodes_t, nodes_s
+        return 0,0,0,0
