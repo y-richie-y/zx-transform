@@ -5,20 +5,17 @@
     "amp": [2],
     "accumulate_gradients": [1],
     "clip_grad_norm": [5],
-    "SUBSWEEP_dims":{
-        "dim512_16":{
-                "enc_emb_dim": [512],
-                "dec_emb_dim":[512],
-	        "n_enc_heads": [8],
-	        "n_dec_heads": [8]
-        }
 
-
-    },
     "SUBSWEEP_layers":{
             "1lay":{
-                "n_enc_layers": [6],
-                "n_dec_layers": [6]
+                "n_enc_layers": [1],
+                "n_dec_layers": [8],
+		"enc_emb_dim": [512],
+                "dec_emb_dim":[640],
+     	        "n_enc_heads": [8],
+    		"n_dec_heads": [10],
+		"batch_size":[48]
+
             }
     }, 
     "n_enc_hidden_layers": [1],
@@ -29,8 +26,7 @@
     "share_inout_emb": ["true"],
     "sinusoidal_embeddings": ["false"],
     "optimizer": ["adam_inverse_sqrt,warmup_updates=10000,lr=0.0001","adam,lr=0.0001"],
-    
-    "batch_size": [72],
+
     "batch_size_eval": [128],
     "epoch_size": [300000],
     "max_epoch": [10000],
@@ -42,35 +38,17 @@
     
     "env_name": ["zx"],
     "tasks": ["simplify"],
-    "env_base_seed": [-1, -2, -3],
+    "env_base_seed": [-1,-2,-3],
     
     "eval_size": [10000],
-    "circuit_type":["clifford","cnots","cliffordT"],
     "SUBSWEEP_dimensions":{
-	    "sq1020": {
-		"max_len":[420],
-                "max_output_len":[250],
-		"min_qubits": [10],
-	        "max_qubits":[10],
-	        "min_depth":[20],
-	        "max_depth":[20]
-             },
-       "sq1025": {
-                "max_len":[480],
-                "max_output_len":[290],
+       "sq1015": {
+                "max_len":[500],
+                "max_output_len":[300],
                 "min_qubits": [10],
                 "max_qubits":[10],
                 "min_depth":[25],
-                "max_depth":[25],
-		"batch_size":[60]
-             },
-       "sq1015": {
-                "max_len":[360],
-                "max_output_len":[220],
-                "min_qubits": [10],
-                "max_qubits":[10],
-                "min_depth":[15],
-                "max_depth":[15]
+                "max_depth":[25]
              }
 
     },

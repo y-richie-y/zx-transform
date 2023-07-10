@@ -1,0 +1,140 @@
+{
+    "dump_path": ["/checkpoint/fcharton/dumped"],
+    "save_periodic": [0],
+    "fp16": ["true"],
+    "amp": [2],
+    "accumulate_gradients": [1],
+    "clip_grad_norm": [5],
+
+    "SUBSWEEP_layers":{
+            "1lay":{
+                "n_enc_layers": [8],
+                "n_dec_layers": [1],
+		"enc_emb_dim": [640],
+                "dec_emb_dim":[512],
+     	        "n_enc_heads": [10],
+    		"n_dec_heads": [8]
+
+            },
+            "2lay":{
+                "n_enc_layers": [6],
+                "n_dec_layers": [1],
+                "enc_emb_dim": [512],
+                "dec_emb_dim":[512],
+                "n_enc_heads": [8],
+                "n_dec_heads": [8]
+
+            },
+            "3lay":{
+                "n_enc_layers": [12],
+                "n_dec_layers": [1],
+                "enc_emb_dim": [768],
+                "dec_emb_dim":[512],
+                "n_enc_heads": [12],
+                "n_dec_heads": [8]
+
+            },
+            "4lay":{
+                "n_enc_layers": [8],
+                "n_dec_layers": [8],
+                "enc_emb_dim": [640],
+                "dec_emb_dim":[640],
+                "n_enc_heads": [10],
+                "n_dec_heads": [10]
+
+            },
+            "5lay":{
+                "n_enc_layers": [12],
+                "n_dec_layers": [12],
+                "enc_emb_dim": [768],
+                "dec_emb_dim":[768],
+                "n_enc_heads": [12],
+                "n_dec_heads": [12]
+
+            },
+            "6lay":{
+                "n_enc_layers": [6],
+                "n_dec_layers": [6],
+                "enc_emb_dim": [512],
+                "dec_emb_dim":[512],
+                "n_enc_heads": [8],
+                "n_dec_heads": [8]
+
+            },
+            "7lay":{
+                "n_enc_layers": [6],
+                "n_dec_layers": [6],
+                "enc_emb_dim": [768],
+                "dec_emb_dim":[768],
+                "n_enc_heads": [16],
+                "n_dec_heads": [16]
+
+            },
+            "8lay":{
+                "n_enc_layers": [8],
+                "n_dec_layers": [8],
+                "enc_emb_dim": [1024],
+                "dec_emb_dim":[1024],
+                "n_enc_heads": [16],
+                "n_dec_heads": [16]
+
+            }
+    }, 
+    "n_enc_hidden_layers": [1],
+    "n_dec_hidden_layers": [1],
+    "dropout": [0],
+    "norm_attention":["false"],
+    "attention_dropout": [0],
+    "share_inout_emb": ["true"],
+    "sinusoidal_embeddings": ["false"],
+    "optimizer": ["adam,lr=0.0001"],
+    
+    "batch_size": [72,64,48,32],
+    "batch_size_eval": [128],
+    "epoch_size": [30000],
+    "max_epoch": [10000],
+    "num_workers": [1],
+    "export_data": ["false"],
+    "reload_data": [""],
+    "reload_size": [-1],
+    "batch_load": ["false"],
+    
+    "env_name": ["zx"],
+    "tasks": ["simplify"],
+    "env_base_seed": [-1],
+    
+    "eval_size": [3000],
+    "SUBSWEEP_dimensions":{
+	    "sq1020": {
+		"max_len":[450],
+                "max_output_len":[300],
+		"min_qubits": [10],
+	        "max_qubits":[10],
+	        "min_depth":[20],
+	        "max_depth":[20]
+             },
+       "sq1025": {
+                "max_len":[500],
+                "max_output_len":[300],
+                "min_qubits": [10],
+                "max_qubits":[10],
+                "min_depth":[25],
+                "max_depth":[25]
+             },
+       "sq1015": {
+                "max_len":[450],
+                "max_output_len":[300],
+                "min_qubits": [10],
+                "max_qubits":[10],
+                "min_depth":[15],
+                "max_depth":[15]
+             }
+
+    },
+    "windows":["false"],
+
+    "eval_verbose": [0],
+    "beam_eval": [1],
+    "stopping_criterion": ["valid_simplify_beam_acc,60"],
+    "validation_metrics": ["valid_simplify_beam_acc"]
+}

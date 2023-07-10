@@ -1,0 +1,120 @@
+{
+    "dump_path": ["/checkpoint/fcharton/dumped"],
+    "save_periodic": [0],
+    "fp16": ["true"],
+    "amp": [2],
+    "accumulate_gradients": [1],
+    "clip_grad_norm": [5],
+
+    "SUBSWEEP_layers":{
+            "4lay":{
+                "n_enc_layers": [8],
+                "n_dec_layers": [8],
+                "enc_emb_dim": [640],
+                "dec_emb_dim":[640],
+                "n_enc_heads": [10],
+                "n_dec_heads": [10],
+		"batch_size":[72],
+		"optimizer": ["adam_inverse_sqrt,warmup_updates=10000,lr=0.0001"]
+            },
+            "6lay":{
+                "n_enc_layers": [6],
+                "n_dec_layers": [6],
+                "enc_emb_dim": [512],
+                "dec_emb_dim":[512],
+                "n_enc_heads": [8],
+                "n_dec_heads": [8],
+		"batch_size":[72],
+		"optimizer": ["adam,lr=0.0001"]
+	    }
+    }, 
+    "n_enc_hidden_layers": [1],
+    "n_dec_hidden_layers": [1],
+    "dropout": [0],
+    "norm_attention":["false"],
+    "attention_dropout": [0],
+    "share_inout_emb": ["true"],
+    "sinusoidal_embeddings": ["false"],
+  
+    "batch_size_eval": [128],
+    "epoch_size": [300000],
+    "max_epoch": [10000],
+    "num_workers": [1],
+    "export_data": ["false"],
+    "reload_data": [""],
+    "reload_size": [-1],
+    "batch_load": ["false"],
+    
+    "env_name": ["zx"],
+    "tasks": ["simplify"],
+    "env_base_seed": [-1,-2,-3],
+    "min_qubits": [10],
+    "max_qubits":[10],
+
+    "eval_size": [10000],
+    "SUBSWEEP_dimensions":{
+       "s5": {
+                "min_depth":[5],
+                "max_depth":[5],
+		"max_len":[240],
+    		"max_output_len":[140]
+
+             },
+     "s10": {
+                "min_depth":[10],
+                "max_depth":[10],
+                "max_len":[300],
+                "max_output_len":[180]
+             },
+     "s15": {
+                "min_depth":[15],
+                "max_depth":[15],
+                "max_len":[360],
+                "max_output_len":[210]
+
+             },
+     "s20": {
+                "min_depth":[20],
+                "max_depth":[20],
+                "max_len":[415],
+                "max_output_len":[245]
+
+             },
+     "s25": {
+                "min_depth":[25],
+                "max_depth":[25],
+                "max_len":[475],
+                "max_output_len":[285]
+
+             },
+     "s30": {
+                "min_depth":[30],
+                "max_depth":[30],
+                "max_len":[535],
+                "max_output_len":[325]
+
+             },
+     "s35": {
+                "min_depth":[35],
+                "max_depth":[35],
+                "max_len":[590],
+                "max_output_len":[360]
+
+             },
+     "s40": {
+                "min_depth":[40],
+                "max_depth":[40],
+                "max_len":[650],
+                "max_output_len":[400]
+
+             }
+
+    },
+    "windows":["false"],
+
+    "eval_verbose": [0],
+    "beam_eval": [1],
+    "stopping_criterion": ["valid_simplify_beam_acc,60"],
+    "validation_metrics": ["valid_simplify_beam_acc"]
+}
+
