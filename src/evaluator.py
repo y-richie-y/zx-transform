@@ -291,14 +291,13 @@ class Evaluator(object):
                     if is_valid >= 0:
                         n_correct += 1
                     if is_valid > 0:
-                        n_valid[nb_ops[i]] += 1
-                        valid[i] = 1
-                
-                        if is_valid2 < is_valid4:
-                            n_valid_d1 += 1
-                        if is_valid2 <= (is_valid3 + is_valid4)/2:
-                            n_valid_d2 += 1
+                        n_valid_d1 += 1
                         if is_valid2 <= is_valid3:
+                            n_valid[nb_ops[i]] += 1
+                            valid[i] = 1                
+                        if is_valid2 < is_valid4:
+                            n_valid_d2 += 1
+                        if is_valid2 < is_valid3:
                             n_valid_d3 += 1
 
                 # update beam log
@@ -577,13 +576,12 @@ class Evaluator(object):
                         if is_valid >= 0:
                             curr_correct = 1
                         if is_valid > 0:
-                            curr_valid = 1
-
-                            if is_valid2 < is_valid4:
-                                curr_d1 = 1
-                            if is_valid2 <= (is_valid3 + is_valid4)/2:
-                                curr_d2 = 1
+                            curr_d1 = 1
                             if is_valid2 <= is_valid3:
+                                curr_valid = 1
+                            if is_valid2 < is_valid4:
+                                curr_d2 = 1
+                            if is_valid2 < is_valid3:
                                 curr_d3 = 1
 
                     # update beam log

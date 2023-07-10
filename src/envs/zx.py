@@ -173,4 +173,7 @@ class ZXEnvironment(object):
         parser.add_argument(
             "--max_nodes", type=int, default=1000, help="maximum depth"
         )
+        parser.add_argument(
+            "--circuit_type", type=str, default="clifford", help="type of circuit to generate, clifford, cnot, cliffordT"
+        )
         

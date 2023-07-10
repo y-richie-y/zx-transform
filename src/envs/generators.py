@@ -4,7 +4,7 @@ import numpy as np
 import math
 import pyzx
 from logging import getLogger
-from pyzx.generate import cliffords, cnots
+from pyzx.generate import cliffords, cnots, cliffordT
 
 logger = getLogger()
 
@@ -29,11 +29,17 @@ class Graphs(Generator):
         self.max_qubits = params.max_qubits
         self.min_depth = params.min_depth
         self.max_depth = params.max_depth
+        self.circuit_type = params.circuit_type
             
     def generate(self, rng):
         qubits = rng.randint(self.min_qubits, self.max_qubits + 1)
         depth = rng.randint(self.min_depth, self.max_depth + 1)
-        circ = cliffords(qubits, depth)
+        if self.circuit_type == "clifford":
+            circ = cliffords(qubits, depth)
+        elif self.circuit_type == "cnot":
+            circ = cnots(qubits, depth)
+        else:
+            circ = cliffordT(qubits, depth)
         pyzx.to_gh(circ)
         
         simp = circ.copy()
