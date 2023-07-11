@@ -166,11 +166,18 @@ class ZXEnvironment(object):
             "--max_qubits", type=int, default=20, help="maxnr of cubits"
         )
         parser.add_argument(
+            "--qubit_step", type=int, default=1, help="qubit step"
+        )
+        parser.add_argument(
             "--min_depth", type=int, default=1, help="minimum depth"
         )
         parser.add_argument(
             "--max_depth", type=int, default=20, help="maximum depth"
         )
+        parser.add_argument(
+            "--depth_step", type=int, default=1, help="depth step"
+        )
+        
         parser.add_argument(
             "--log_qubits_depth", type=bool_flag, default=False, help="log nr of qbits and depths in the 2 first tokens"
         )

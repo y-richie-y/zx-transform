@@ -27,13 +27,16 @@ class Graphs(Generator):
         super().__init__(params)
         self.min_qubits = params.min_qubits
         self.max_qubits = params.max_qubits
+        self.qubit_step = params.qubit_step
         self.min_depth = params.min_depth
         self.max_depth = params.max_depth
+        self.depth_step = params.depth_step
         self.circuit_type = params.circuit_type
             
     def generate(self, rng):
-        qubits = rng.randint(self.min_qubits, self.max_qubits + 1)
-        depth = rng.randint(self.min_depth, self.max_depth + 1)
+
+        qubits = rng.choice(range(self.min_qubits, self.max_qubits + 1, self.qubit_step))
+        depth = rng.choice(range(self.min_depth, self.max_depth + 1, self.depth_step))
         if self.circuit_type == "clifford":
             circ = cliffords(qubits, depth)
         elif self.circuit_type == "cnot":
