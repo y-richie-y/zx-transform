@@ -28,9 +28,13 @@ class Graph(Encoder):
     """
     def __init__(self, params):
         super().__init__()
+        self.log_qubits_depth = params.log_qubits_depth
+        self.precise = params.precise_vocab
         self.symbols = [str(i) for i in range(params.max_int + 1)] + [f"N{i}" for i in range(params.max_nodes + 1)]
+        if self.precise:
+            self.symbols.extend(["E1", "E2", "T0", "T1", "T2", "T3"])
 
-    def encode(self, circ):
+    def encode(self, circ, qubits=None, depth=None):
         """ Converts pyzx graph into tokens. """
         indices = sorted(circ.types().keys())
         types_dict = OrderedDict(circ.types())
@@ -38,27 +42,38 @@ class Graph(Encoder):
         nr_nodes = len( circ.types())
         assert nr_nodes == circ.num_vertices()
         nr_edges = circ.num_edges()
-        toks = [str(nr_nodes), str(nr_edges)]
+        if self.log_qubits_depth:
+            toks = [str(qubits), str(depth), str(nr_nodes), str(nr_edges)]
+        else:
+            toks = [str(nr_nodes), str(nr_edges)]
+            
         for key in types_dict.keys():
-            toks.extend([str(types_dict[key]), str(int(phases_dict[key] * 4))]) 
+            if self.precise:
+                toks.extend([f"T{types_dict[key]}", str(int(phases_dict[key] * 4))]) 
+            else:
+                toks.extend([str(types_dict[key]), str(int(phases_dict[key] * 4))]) 
         for edge in circ.edges():
-            toks.append(str(circ.edge_type(edge)))
+            if self.precise:
+                toks.append(f"E{circ.edge_type(edge)}")
+            else:
+                toks.append(str(circ.edge_type(edge)))
             toks.extend([f"N{indices.index(x)}" for x in edge])
         return toks
 
     def parse(self, lst):
-        if len(lst) < 2:
+        offset = 2 if self.log_qubits_depth else 0
+        if len(lst) < 2 + offset:
             return None, 0
         graph = pyzx.Graph()
         input_time = True
         inputs = []
         outputs = []
         try: 
-            nr_nodes = int(lst[0])
-            nr_edges = int(lst[1])
-            if len(lst) != 2 + 2 * nr_nodes + 3 * nr_edges:
+            nr_nodes = int(lst[offset])
+            nr_edges = int(lst[offset + 1])
+            if len(lst) != 2 + offset + 2 * nr_nodes + 3 * nr_edges:
                 return None, 0
-            offset = 2
+            offset += 2
             for _ in range(nr_nodes):
                 type = int(lst[offset])
                 phase = int(lst[offset+1])

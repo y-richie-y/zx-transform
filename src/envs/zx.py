@@ -41,6 +41,7 @@ class ZXEnvironment(object):
         
         self.encoder = encoders.Graph(params)
         self.generator = generators.Graphs(params)
+        self.log_qubits_depth = params.log_qubits_depth
 
         # vocabulary
         self.words = SPECIAL_WORDS + sorted(list(set(self.encoder.symbols)))
@@ -69,19 +70,23 @@ class ZXEnvironment(object):
         gen = self.generator.generate(self.rng)
         if gen is None:
             return None
-        x_data, y_data = gen
+        x_data, y_data, qubits, depth = gen
         # encode input
-        x = self.encoder.encode(x_data)
+        x = self.encoder.encode(x_data, qubits, depth)
         # encode output
-        y = self.encoder.encode(y_data)
+        y = self.encoder.encode(y_data, qubits, depth)
         if self.max_len > 0 and (len(x) >= self.max_len or len(y) >= self.max_len):
             return None
         return x, y
 
     def decode_class(self, i):
+        if self.log_qubits_depth:
+            return f"{i//100}/{i%100}"
         return f"{i%100}-{(i+1)*100}"
 
     def code_class(self, xi, yi):
+        if self.log_qubits_depth:
+            return int(xi[0]) * 100 + int(xi[1])
         return int(len(xi))//100
 
     def check_prediction(self, src, tgt, hyp):
@@ -166,6 +171,13 @@ class ZXEnvironment(object):
         parser.add_argument(
             "--max_depth", type=int, default=20, help="maximum depth"
         )
+        parser.add_argument(
+            "--log_qubits_depth", type=bool_flag, default=False, help="log nr of qbits and depths in the 2 first tokens"
+        )
+        parser.add_argument(
+            "--precise_vocab", type=bool_flag, default=False, help="precise encoding vocabulary"
+        )
+        
         
         parser.add_argument(
             "--max_int", type=int, default=1000, help="maximum depth"

@@ -44,7 +44,7 @@ class Graphs(Generator):
         
         simp = circ.copy()
         pyzx.full_reduce(simp)
-        return circ, simp
+        return circ, simp, qubits, depth
 
     def evaluate(self, src, tgt, hyp):
         e = src + hyp.adjoint()
