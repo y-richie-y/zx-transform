@@ -75,7 +75,10 @@ class Graph(Encoder):
                 return None, 0
             offset += 2
             for _ in range(nr_nodes):
-                type = int(lst[offset])
+                if self.precise:
+                    type = int(lst[offset][1:])
+                else:
+                    type = int(lst[offset])
                 phase = int(lst[offset+1])
                 v = graph.add_vertex(phase=phase/4, ty=type )
                 if type == 0:
@@ -94,7 +97,10 @@ class Graph(Encoder):
             graph.set_inputs(inputs)
             graph.set_outputs(outputs)
             for _ in range(nr_edges):
-                type = int(lst[offset])
+                if self.precise:
+                    type = int(lst[offset][1:])
+                else:
+                    type = int(lst[offset])
                 edge = [int(s[1:]) for s in lst[offset+1:offset+3]]
                 graph.add_edge(edge, type)
                 offset += 3

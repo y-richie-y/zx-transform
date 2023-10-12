@@ -38,7 +38,8 @@
     "env_name": ["zx"],
     "tasks": ["simplify"],
     "env_base_seed": [-1,-2,-3],
-    "log_qubits_depth":["true","false"],
+    "log_qubits_depth":["false"],
+    "precise_vocab":["true","false"],
     
     "eval_size": [10000],
     "SUBSWEEP_dimensions":{
