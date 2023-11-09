@@ -33,7 +33,6 @@ class Graphs(Generator):
         self.max_depth = params.max_depth
         self.depth_step = params.depth_step
         self.circuit_type = params.circuit_type
-        self.max_steps = params.max_steps
 
     def generate(self, rng):
 
@@ -48,9 +47,6 @@ class Graphs(Generator):
         pyzx.to_gh(circ)
 
         simp = circ.copy()
-        if self.max_steps < 0:
-            pyzx.full_reduce(simp)
-            return circ, simp, qubits, depth
 
         moves = []
         for move, name in full_reduce_iter(simp):
@@ -58,8 +54,8 @@ class Graphs(Generator):
 
         # moves = list(full_reduce_iter(simp))
 
-        start_idx = rng.choice(range(max(1, len(moves) - self.max_steps)))
-        end_idx = min(start_idx + self.max_steps, len(moves) - 1)
+        start_idx = rng.choice(range(len(moves)))
+        end_idx = len(moves) - 1
         
         start = moves[start_idx]
         end = moves[end_idx]
