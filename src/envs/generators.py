@@ -5,6 +5,7 @@ import math
 import pyzx
 from logging import getLogger
 from pyzx.generate import cliffords, cnots, cliffordT
+from pyzx.simplify import full_reduce_iter
 
 logger = getLogger()
 
@@ -32,7 +33,8 @@ class Graphs(Generator):
         self.max_depth = params.max_depth
         self.depth_step = params.depth_step
         self.circuit_type = params.circuit_type
-            
+        self.max_steps = params.max_steps
+
     def generate(self, rng):
 
         qubits = rng.choice(range(self.min_qubits, self.max_qubits + 1, self.qubit_step))
@@ -44,10 +46,25 @@ class Graphs(Generator):
         else:
             circ = cliffordT(qubits, depth)
         pyzx.to_gh(circ)
-        
+
         simp = circ.copy()
-        pyzx.full_reduce(simp)
-        return circ, simp, qubits, depth
+        if self.max_steps < 0:
+            pyzx.full_reduce(simp)
+            return circ, simp, qubits, depth
+
+        moves = []
+        for move, name in full_reduce_iter(simp):
+            moves.append(move.copy())
+
+        # moves = list(full_reduce_iter(simp))
+
+        start_idx = rng.choice(range(max(1, len(moves) - self.max_steps)))
+        end_idx = min(start_idx + self.max_steps, len(moves) - 1)
+        
+        start = moves[start_idx]
+        end = moves[end_idx]
+
+        return start, end, qubits, depth
 
     def evaluate(self, src, tgt, hyp):
         e = src + hyp.adjoint()

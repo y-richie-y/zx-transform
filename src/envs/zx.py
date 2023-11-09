@@ -177,7 +177,10 @@ class ZXEnvironment(object):
         parser.add_argument(
             "--depth_step", type=int, default=1, help="depth step"
         )
-        
+        parser.add_argument(
+            "--max_steps", type=int, default=-1, help="number of moves performed on the hypothesis"
+        )
+
         parser.add_argument(
             "--log_qubits_depth", type=bool_flag, default=False, help="log nr of qbits and depths in the 2 first tokens"
         )
@@ -195,4 +198,4 @@ class ZXEnvironment(object):
         parser.add_argument(
             "--circuit_type", type=str, default="clifford", help="type of circuit to generate, clifford, cnot, cliffordT"
         )
-        
+
