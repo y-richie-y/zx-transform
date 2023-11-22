@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
 import numpy as np
 from collections import OrderedDict
+from itertools import combinations
 from random import random
 import pyzx
+import pauliopt
+
 
 class Encoder(ABC):
     """
@@ -15,12 +18,13 @@ class Encoder(ABC):
     @abstractmethod
     def encode(self, val):
         pass
-   
+
     def decode(self, lst):
         v, p = self.parse(lst)
         if p == 0:
             return None
         return v
+
 
 class Graph(Encoder):
     """
@@ -110,3 +114,43 @@ class Graph(Encoder):
         return  graph, offset
 
 
+class Circuit(pauliopt.PhaseCircuit):
+    def __init__(self, params):
+        super().__init__()
+        self.log_qubits_depth = params.log_qubits_depth
+        self.precise = params.precise_vocab
+        self.symbols = [f"nqubits={i}" for i in range(params.max_int + 1)]
+        self.symbols.extend([f"q{i}" for i in range(params.max_int + 1)])
+        self.symbols.extend([f"Z({i}T)" for i in range(8)])
+
+    def encode(self, circ):
+        """ Convert pauliopt circuit into tokens. """
+        tokens = [f"nqubits={circ.num_qubits}"]
+        for gadget in circ.gadgets:
+            angle8 = int(float(gadget.angle) * 4 / float(pi))
+            tokens.extend([f"q{i}" for i in gadget.qubits])
+            tokens.append(f"{gadget.basis}({angle8}T)")
+        return tokens
+
+    def parse(self, tokens):
+        num_qubits = int(tokens[0].split("=")[1])
+        circ = pauliopt.PhaseCircuit(num_qubits)
+        legs = set()
+        for token in tokens[1:]:
+            if token.startswith("q"):
+                legs.add(int(token[1:]))
+            else:
+                basis = token[0]
+                angle4 = int(token[2:-2])
+                angle = angle4 * pauliopt.pi / 4
+                if basis == "Z":
+                    circ >>= pauliopt.Z(angle) @ legs
+                elif basis == "X":
+                    circ >>= pauliopt.X(angle) @ legs
+                else:
+                    raise ValueError(f"Unknown basis {basis}")
+                legs = set()
+
+        # return a non zero value to indicate success
+        offset = -1
+        return circ, offset

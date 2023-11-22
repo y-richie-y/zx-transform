@@ -7,10 +7,11 @@
 
 from logging import getLogger
 
-from .zx import ZXEnvironment
+from .zx import PaulioptEnvironment, PyzxEnvironment
 
 ENVS = {
-    'zx': ZXEnvironment,
+    'pyzx': PyzxEnvironment,
+    'spider': PaulioptEnvironment,
 }
 
 logger = getLogger()
