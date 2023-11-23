@@ -1,15 +1,13 @@
 
 from abc import ABC, abstractmethod
-from bz2 import compress
 import random
-from gadget import random_walk
 import numpy as np
 import math
 import pyzx
 from logging import getLogger
 from pyzx.generate import cliffords, cnots, cliffordT
 
-import pauliopt
+from pauliopt import phase as pauliopt
 from itertools import combinations
 from collections import OrderedDict
 
@@ -82,7 +80,7 @@ class Circuits(Generator):
         """ Random walk on the space of circuits using spider nest identity """
         for _ in range(niter):
             size = rng.randint(4, min(circ.num_qubits, 8))
-            qubits = rng.sample(range(circ.num_qubits), size)
+            qubits = rng.choice(range(circ.num_qubits), size=size).tolist()
             circ = self.spider_nest(circ, qubits)
         return circ
 
@@ -156,21 +154,20 @@ class Circuits(Generator):
         return all(abs(angle) % 1 < 1e-5 for angle in d2.values())
 
     def generate(self, rng):
-        qubits = rng.choice(range(self.min_qubits, self.max_qubits + 1, self.qubit_step))
-        depth = rng.choice(range(self.min_depth, self.max_depth + 1, self.depth_step))
+        qubits = rng.choice(range(self.min_qubits, self.max_qubits + 1, self.qubit_step)).item()
+        depth = rng.choice(range(self.min_depth, self.max_depth + 1, self.depth_step)).item()
 
         circ = pauliopt.PhaseCircuit(qubits)
         t = pauliopt.pi / 4
         for _ in range(depth):
             phase = t * rng.choice(range(8))
             n_legs = rng.choice(range(1, max(4, qubits)))
-            legs = rng.choice(range(qubits), size=n_legs, replace=False)
+            legs = rng.choice(range(qubits), size=n_legs, replace=False).tolist()
             circ >>= pauliopt.Z(phase) @ legs
-
-        compress(circ)
+        self.compress(circ)
         orig_circ = circ.cloned()
-        random_walk(circ, rng, niter=self.walk_steps)
-        compress(circ)
+        self.random_walk(circ, rng, niter=self.walk_steps)
+        self.compress(circ)
 
         # backwards generation
         return circ, orig_circ, qubits, depth

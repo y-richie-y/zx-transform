@@ -4,8 +4,8 @@ from collections import OrderedDict
 from itertools import combinations
 from random import random
 import pyzx
-import pauliopt
-
+from pauliopt import phase as pauliopt
+import math
 
 class Encoder(ABC):
     """
@@ -114,20 +114,20 @@ class Graph(Encoder):
         return  graph, offset
 
 
-class Circuit(pauliopt.PhaseCircuit):
+class Circuit(Encoder):
     def __init__(self, params):
         super().__init__()
-        self.log_qubits_depth = params.log_qubits_depth
-        self.precise = params.precise_vocab
+        self.log_depth = params.log_depth
+        self.precise = True
         self.symbols = [f"nqubits={i}" for i in range(params.max_int + 1)]
         self.symbols.extend([f"q{i}" for i in range(params.max_int + 1)])
         self.symbols.extend([f"Z({i}T)" for i in range(8)])
 
-    def encode(self, circ):
+    def encode(self, circ, qubits=None, depth=None):
         """ Convert pauliopt circuit into tokens. """
         tokens = [f"nqubits={circ.num_qubits}"]
         for gadget in circ.gadgets:
-            angle8 = int(float(gadget.angle) * 4 / float(pi))
+            angle8 = int(float(gadget.angle) * 4 / float(math.pi))
             tokens.extend([f"q{i}" for i in gadget.qubits])
             tokens.append(f"{gadget.basis}({angle8}T)")
         return tokens
