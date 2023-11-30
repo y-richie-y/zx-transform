@@ -76,13 +76,44 @@ class Circuits(Generator):
         self.depth_step = params.depth_step
         self.walk_steps = params.walk_steps
 
+    # def random_walk(self, circ, rng, niter=100):
+    #     """ Random walk on the space of circuits using spider nest identity """
+    #     for _ in range(niter):
+    #         size = rng.randint(4, min(circ.num_qubits, 8))
+    #         qubits = rng.sample(range(circ.num_qubits), size)
+    #         circ = self.spider_nest(circ, qubits)
+    #     return circ
+
     def random_walk(self, circ, rng, niter=100):
-        """ Random walk on the space of circuits using spider nest identity """
+        """ Random walk, returning the circuits with the highest and lowest t-count """
+        best_circ = circ
+        best_t = self.t_count(circ)
+        worst_circ = circ
+        worst_t = self.t_count(circ)
+        max_len = int(len(circ.gadgets) * 1.5)
         for _ in range(niter):
             size = rng.randint(4, min(circ.num_qubits, 8))
             qubits = rng.choice(range(circ.num_qubits), size=size).tolist()
             circ = self.spider_nest(circ, qubits)
-        return circ
+            t = self.t_count(circ)
+            if t < best_t and len(circ.gadgets) <= max_len:
+                best_t = t
+                best_circ = circ
+            if t > worst_t:
+                worst_t = t
+                worst_circ = circ
+        return best_circ, worst_circ
+
+    def t_count(self, circ):
+        """ Count the number of phases with odd multiple of pi/4 in a circuit """
+        t = 0
+        for gadget in circ.gadgets:
+            if gadget.basis == "Z":
+                angle = gadget.angle
+                if np.pi / float(angle) % 2 == 1:
+                    t += 1
+        return t
+
 
     def spider_nest(self, circ, qubits):
         """
