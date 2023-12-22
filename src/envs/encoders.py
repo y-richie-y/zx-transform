@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
-import numpy as np
 from collections import OrderedDict
-from itertools import combinations
 from random import random
 import pyzx
-from pauliopt import phase as pauliopt
-import math
+from .diag_t import DiagT
+
 
 class Encoder(ABC):
     """
@@ -118,37 +116,32 @@ class Circuit(Encoder):
     def __init__(self, params):
         super().__init__()
         self.log_depth = params.log_depth
+        # TODO: what is precise?
         self.precise = True
         self.symbols = [f"nqubits={i}" for i in range(params.max_int + 1)]
         self.symbols.extend([f"q{i}" for i in range(params.max_int + 1)])
         self.symbols.extend([f"Z({i}T)" for i in range(8)])
+        # TODO not ignore cliffords setting
 
     def encode(self, circ, qubits=None, depth=None):
-        """ Convert pauliopt circuit into tokens. """
-        tokens = [f"nqubits={circ.num_qubits}"]
-        for gadget in circ.gadgets:
-            angle8 = int(float(gadget.angle) * 4 / float(math.pi))
-            tokens.extend([f"q{i}" for i in gadget.qubits])
-            tokens.append(f"{gadget.basis}({angle8}T)")
+        """ Convert DiagT circuit into tokens. """
+        tokens = [f"nqubits={circ.n_qubits}"]
+        for qs, phase8 in circ._dict.items():
+            tokens.extend([f"q{i}" for i in qs])
+            tokens.append(f"Z({phase8}T)")
         return tokens
 
     def parse(self, tokens):
-        num_qubits = int(tokens[0].split("=")[1])
-        circ = pauliopt.PhaseCircuit(num_qubits)
+        n_qubits = int(tokens[0].split("=")[1])
+        circ = DiagT(n_qubits)
         legs = set()
         for token in tokens[1:]:
             if token.startswith("q"):
                 legs.add(int(token[1:]))
             else:
-                basis = token[0]
-                angle4 = int(token[2:-2])
-                angle = angle4 * pauliopt.pi / 4
-                if basis == "Z":
-                    circ >>= pauliopt.Z(angle) @ legs
-                elif basis == "X":
-                    circ >>= pauliopt.X(angle) @ legs
-                else:
-                    raise ValueError(f"Unknown basis {basis}")
+                # basis = token[0]
+                angle8 = int(token[2:-2])
+                circ.add_gadget(angle8, legs)
                 legs = set()
 
         # return a non zero value to indicate success
