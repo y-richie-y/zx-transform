@@ -102,16 +102,16 @@ class Circuits(Generator):
         """
         Evaluate an example for the model.
         By construction, the source and target are always equivalent.
-        
+
         Arguments
         ---------
-        src: pauliopt.phase.PhaseCircuit
+        src: DiagT
             the generated original circuit
-        tgt: pauliopt.phase.PhaseCircuit
+        tgt: DiagT
             the generated output circuit
-        hyp: pauliopt.phase.PhaseCircuit
+        hyp: DiagT
             the circuit output by model
-        
+
         Returns
         -------
         int
