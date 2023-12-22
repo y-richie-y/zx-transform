@@ -223,6 +223,7 @@ class PaulioptEnvironment(object):
     def input_to_infix(self, lst):
         return ''.join(lst)
 
+    # TODO
     def output_to_infix(self, lst):
         return ''.join(lst)
 
