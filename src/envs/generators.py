@@ -204,6 +204,30 @@ class Circuits(Generator):
         return circ, orig_circ, qubits, depth
 
     def evaluate(self, src, tgt, hyp):
+        """
+        Evaluate an example for the model.
+        By construction, the source and target are always equivalent.
+        
+        Arguments
+        ---------
+        src: pauliopt.phase.PhaseCircuit
+            the generated original circuit
+        tgt: pauliopt.phase.PhaseCircuit
+            the generated output circuit
+        hyp: pauliopt.phase.PhaseCircuit
+            the circuit output by model
+        
+        Returns
+        -------
+        int
+            whether the `src` is equivalent to the `hyp` (0 or 1)
+        int
+            (n_h) number of gadgets in hypothesis
+        int
+            (n_t) number of gadgets in target
+        int
+            (n_s) number of gadgets in source
+        """
         e = src + hyp.adjoint()
         for g in hyp.gadgets[::-1]:
             src >>= pauliopt.Z(-g.angle) @ g.qubits
