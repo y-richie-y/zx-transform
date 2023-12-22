@@ -219,6 +219,7 @@ class PaulioptEnvironment(object):
         self.pad_index = params.pad_index = 1
         logger.info(f"words: {self.word2id}")
 
+    # TODO
     def input_to_infix(self, lst):
         return ''.join(lst)
 
