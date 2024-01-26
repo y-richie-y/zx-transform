@@ -1,10 +1,17 @@
 
 from abc import ABC, abstractmethod
+import random
 import numpy as np
 import math
 import pyzx
 from logging import getLogger
 from pyzx.generate import cliffords, cnots, cliffordT
+
+from pauliopt import phase as pauliopt
+from itertools import combinations
+from collections import OrderedDict
+
+from src.envs.diag_t import DiagT
 
 logger = getLogger()
 
@@ -58,3 +65,70 @@ class Graphs(Generator):
             nodes_h = hyp.num_vertices()
             return 1, nodes_h, nodes_t, nodes_s
         return 0,0,0,0
+
+
+class Circuits(Generator):
+    def __init__(self, params):
+        super().__init__(params)
+        self.min_qubits = params.min_qubits
+        self.max_qubits = params.max_qubits
+        self.qubit_step = params.qubit_step
+        self.min_depth = params.min_depth
+        self.max_depth = params.max_depth
+        self.depth_step = params.depth_step
+        self.walk_steps = params.walk_steps
+
+    def generate(self, rng):
+        qb_range = range(self.min_qubits, self.max_qubits + 1, self.qubit_step)
+        dp_range = range(self.min_depth, self.max_depth + 1, self.depth_step)
+        qubits = rng.choice(qb_range).item()
+        depth = rng.choice(dp_range).item()
+
+        circ = DiagT(qubits)
+        for _ in range(depth):
+            phase8 = rng.choice(range(8))
+            n_legs = rng.choice(range(1, max(4, qubits)))
+            legs = rng.choice(range(qubits), size=n_legs, replace=False).tolist()
+            circ.add_gadget(phase8, legs)
+
+        orig_circ = circ.cloned()
+        circ.random_walk(circ, rng, niter=self.walk_steps)
+        self.compress(circ)
+
+        # backwards generation
+        return circ, orig_circ, qubits, depth
+
+    def evaluate(self, src, tgt, hyp):
+        """
+        Evaluate an example for the model.
+        By construction, the source and target are always equivalent.
+
+        Arguments
+        ---------
+        src: DiagT
+            the generated original circuit
+        tgt: DiagT
+            the generated output circuit
+        hyp: DiagT
+            the circuit output by model
+
+        Returns
+        -------
+        int
+            whether the `src` is equivalent to the `hyp` (0 or 1)
+        int
+            (n_h) number of gadgets in hypothesis
+        int
+            (n_t) number of gadgets in target
+        int
+            (n_s) number of gadgets in source
+        """
+        e = src + hyp.adjoint()
+        for g in hyp.gadgets[::-1]:
+            src >>= pauliopt.Z(-g.angle) @ g.qubits
+        if self.is_id(e):
+            n_s = len(src)
+            n_t = len(tgt)
+            n_h = len(hyp)
+            return 1, n_h, n_t, n_s
+        return 0, 0, 0, 0
