@@ -96,7 +96,7 @@ class Circuits(Generator):
         inp = DiagT(n_qubits, dict(items[len(items)//3:]))
         out = DiagT(n_qubits, dict(items[:len(items)//3]))
 
-        return inp, out, qubits, depth
+        return inp, out, n_qubits, depth
 
     def evaluate(self, src, tgt, hyp):
         """
