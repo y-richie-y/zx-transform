@@ -81,22 +81,22 @@ class Circuits(Generator):
     def generate(self, rng):
         qb_range = range(self.min_qubits, self.max_qubits + 1, self.qubit_step)
         dp_range = range(self.min_depth, self.max_depth + 1, self.depth_step)
-        qubits = rng.choice(qb_range).item()
+        n_qubits = rng.choice(qb_range).item()
         depth = rng.choice(dp_range).item()
 
-        circ = DiagT(qubits)
+        circ = DiagT(n_qubits)
+        t = pauliopt.pi / 4
         for _ in range(depth):
-            phase8 = rng.choice(range(8))
-            n_legs = rng.choice(range(1, max(4, qubits)))
-            legs = rng.choice(range(qubits), size=n_legs, replace=False).tolist()
-            circ.add_gadget(phase8, legs)
+            size = rng.randint(4, min(circ.n_qubits, 8) + 1)
+            qubits = rng.choice(range(circ.n_qubits), size=size, replace=False).tolist()
+            times = rng.randint(1, 8)
+            circ = circ.spider_nest(qubits, k=1)
+        items = list(circ._dict.items())
+        np.random.shuffle(items)
+        inp = DiagT(n_qubits, dict(items[len(items)//3:]))
+        out = DiagT(n_qubits, dict(items[:len(items)//3]))
 
-        orig_circ = circ.cloned()
-        circ.random_walk(circ, rng, niter=self.walk_steps)
-        self.compress(circ)
-
-        # backwards generation
-        return circ, orig_circ, qubits, depth
+        return inp, out, qubits, depth
 
     def evaluate(self, src, tgt, hyp):
         """

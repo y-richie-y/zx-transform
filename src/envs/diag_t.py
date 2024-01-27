@@ -10,10 +10,11 @@ def rev_len_sort(x):
 
 
 class DiagT:
-    def __init__(self, n_qubits, _dict=None, ignore_cliffords=False):
+    def __init__(self, n_qubits, _dict=None, ignore_cliffords=True):
         if _dict is None:
             _dict = dict()
         self._dict = _dict
+        self.nests = set()
         self.n_qubits = n_qubits
         self.ignore_cliffords = ignore_cliffords
         self.base = 2 if ignore_cliffords else 8
@@ -53,10 +54,15 @@ class DiagT:
             angle8 = - (n - 3)  # - (n - 3) * pi / 4
             self.add_gadget(k * angle8, qs)
         for qs in combinations(qubits, 3):
-            angle8 = 1  # -pi / 4
+            angle8 = 1  # pi / 4
             self.add_gadget(k * angle8, qs)
         angle8 = - 1  # -pi / 4
         self.add_gadget(k * angle8, qubits)
+
+        # toggle whether qubit is in nest
+        if k % 2 == 1:
+            self.nests ^= {tuple(sorted(qubits))}
+
         return self
 
     def random_walk(self, circ, rng, niter=100):
