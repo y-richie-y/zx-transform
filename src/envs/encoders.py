@@ -126,7 +126,7 @@ class Circuit(Encoder):
     def encode(self, circ, qubits=None, depth=None):
         """ Convert DiagT circuit into tokens. """
         tokens = [f"nqubits={circ.n_qubits}"]
-        for qs, phase8 in circ._dict.items():
+        for qs, phase8 in sorted(circ._dict.items()):
             tokens.extend([f"q{i}" for i in qs])
             tokens.append(f"Z({phase8}T)")
         return tokens
