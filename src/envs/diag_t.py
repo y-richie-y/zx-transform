@@ -25,6 +25,15 @@ class DiagT:
     def _repr_svg_(self):
         return self.to_pauliopt()._repr_svg_()
 
+    def adjoint(self):
+        if self.ignore_cliffords:
+            return self
+
+        new_dict = dict()
+        for k in self._dict:
+            new_dict[k] = (self.base -self._dict[k]) % self.base
+        return DiagT(self.n_qubits, _dict=new_dict)
+
     def add_gadget(self, phase8, qubits):
         if len(set(qubits)) != len(qubits):
             raise Exception(f"Qubits {qubits} must be unique")
@@ -70,7 +79,7 @@ class DiagT:
         for _ in range(niter):
             size = rng.randint(4, min(circ.n_qubits, 8) + 1)
             qubits = rng.choice(range(circ.n_qubits), size=size, replace=False).tolist()
-            k = rng.choice(range(1, circ.base))
+            k = rng.choice(range(1, circ.base)) 
             circ.spider_nest(qubits, k)
         return circ
 
