@@ -124,9 +124,7 @@ class Circuits(Generator):
             (n_s) number of gadgets in source
         """
         e = src + hyp.adjoint()
-        for g in hyp.gadgets[::-1]:
-            src >>= pauliopt.Z(-g.angle) @ g.qubits
-        if self.is_id(e):
+        if e.is_id():
             n_s = len(src)
             n_t = len(tgt)
             n_h = len(hyp)
