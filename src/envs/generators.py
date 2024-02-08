@@ -125,8 +125,8 @@ class Circuits(Generator):
         """
         e = src + hyp.adjoint()
         if e.is_id():
-            n_s = len(src)
-            n_t = len(tgt)
-            n_h = len(hyp)
+            n_s = src.n_gadgets()
+            n_t = src.n_gadgets()
+            n_h = src.n_gadgets()
             return 1, n_h, n_t, n_s
         return 0, 0, 0, 0
