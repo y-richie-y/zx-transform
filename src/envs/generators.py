@@ -123,17 +123,12 @@ class Circuits(Generator):
         int
             (n_s) number of gadgets in source
         """
-        d1 = src._dict
-        d2 = hyp._dict
-
-        e = DiagT(src.n_qubits, {
-            k: (d1.get(k, 0) - d2.get(k, 0)) % src.base
-            for k in set(d1) | set(d2)
-        })
+  
+        e = hyp.cloned().merge(tgt.adjoint())
 
         if e.is_id():
-            n_s = src.n_gadgets()
-            n_t = src.n_gadgets()
-            n_h = src.n_gadgets()
+            n_s = src.n_gadgets
+            n_t = src.n_gadgets
+            n_h = src.n_gadgets
             return 1, n_h, n_t, n_s
         return 0, 0, 0, 0
