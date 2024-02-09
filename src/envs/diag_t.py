@@ -47,6 +47,11 @@ class DiagT:
             del self._dict[qubits]
         return self
 
+    def merge(self, other):
+        for k, v in other._dict.items():
+            self.add_gadget(v, k)
+        return self
+
     def spider_nest(self, qubits, k=1):
         """
         Apply the n-qubit spider nest identity k times to the selected qubits.
