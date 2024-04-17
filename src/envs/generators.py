@@ -12,6 +12,7 @@ from itertools import combinations
 from collections import OrderedDict
 
 from src.envs.diag_t import DiagT
+from src.envs.zx import TrackingGraph, flat_reduce
 
 logger = getLogger()
 
@@ -55,6 +56,48 @@ class Graphs(Generator):
         simp = circ.copy()
         pyzx.full_reduce(simp)
         return circ, simp, qubits, depth
+
+    def evaluate(self, src, tgt, hyp):
+        e = src + hyp.adjoint()
+        pyzx.full_reduce(e)
+        if e.is_id():
+            nodes_s = src.num_vertices()
+            nodes_t = tgt.num_vertices()
+            nodes_h = hyp.num_vertices()
+            return 1, nodes_h, nodes_t, nodes_s
+        return 0,0,0,0
+
+
+class FlatGraphs(Graphs):
+    def __init__(self, params):
+        super().__init__(params)
+        self.current_graph = None
+
+    def new_graph(self, rng):
+        qubits = rng.choice(range(self.min_qubits, self.max_qubits + 1, self.qubit_step))
+        depth = rng.choice(range(self.min_depth, self.max_depth + 1, self.depth_step))
+        if self.circuit_type == "clifford":
+            circ = cliffords(qubits, depth)
+        elif self.circuit_type == "cnot":
+            circ = cnots(qubits, depth)
+        else:
+            circ = cliffordT(qubits, depth)
+        self.current_graph = TrackingGraph.upgrade(circ)
+        self.n_qubits = qubits
+        self.n_depth = depth
+
+    def generate(self, rng):
+        if self.current_graph is None:
+            self.new_graph(rng)
+        circ1 = self.current_graph.copy()
+        circ2 = self.current_graph
+
+        flat_reduce(circ2)
+        if not circ2.verts_changed:
+            self.new_graph(rng)
+            return self.generate(rng)
+
+        return circ1, circ2, self.n_qubits, self.n_depth
 
     def evaluate(self, src, tgt, hyp):
         e = src + hyp.adjoint()
