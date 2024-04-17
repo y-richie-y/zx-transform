@@ -112,6 +112,48 @@ class Graph(Encoder):
         return  graph, offset
 
 
+class NewCircuit(Encoder):
+    """ Binary encoding the legs of the gadget """
+    def __init__(self, params):
+        super().__init__()
+        self.log_depth = params.log_depth
+        self.precise = True
+        self.symbols = [f"nqubits={i}" for i in range(params.max_int + 1)]
+        # whether the gadget acts on that leg
+        self.symbols.extend(["YES", "NO"])
+        self.symbols.extend([f"Z({i}T)" for i in range(8)])
+
+    def encode(self, circ, qubits=None, depth=None):
+        """ Convert DiagT circuit into tokens. """
+        tokens = []
+        for qs, phase8 in sorted(circ._dict.items()):
+            for i in range(circ.n_qubits):
+                tokens.append("YES" if i in qs else "NO")
+            tokens.append(f"Z({phase8}T)")
+        return tokens
+
+    def parse(self, tokens):
+        n_qubits = int(tokens[0].split("=")[1])
+        circ = DiagT(n_qubits)
+        legs = set()
+        i = 0
+        for token in tokens[1:]:
+            if token in ["YES", "NO"]:
+                if token == "YES":
+                    legs.add(i)
+                i += 1
+            else:
+                # basis = token[0]
+                angle8 = int(token[2:-2])
+                circ.add_gadget(angle8, legs)
+                legs = set()
+                i = 0
+
+        # return a non zero value to indicate success
+        offset = -1
+        return circ, offset
+
+
 class Circuit(Encoder):
     def __init__(self, params):
         super().__init__()
