@@ -164,7 +164,7 @@ def get_parser():
                         help="Load training set by batches (of size reload_size).")
 
     # environment parameters
-    parser.add_argument("--env_name", type=str, default="zx",
+    parser.add_argument("--env_name", type=str, default="pyzx",
                         help="Environment name")
     ENVS[parser.parse_known_args()[0].env_name].register_args(parser)
 
