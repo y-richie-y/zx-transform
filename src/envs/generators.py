@@ -178,6 +178,7 @@ class FlatGraphs(Graphs):
     def __init__(self, params):
         super().__init__(params)
         self.current_graph = None
+        self.current_step = -1
 
     def new_graph(self, rng):
         qubits = rng.choice(range(self.min_qubits, self.max_qubits + 1, self.qubit_step))
@@ -189,6 +190,7 @@ class FlatGraphs(Graphs):
         else:
             circ = cliffordT(qubits, depth)
         self.current_graph = TrackingGraph.upgrade(circ)
+        self.current_step = 0
         self.n_qubits = qubits
         self.n_depth = depth
 
@@ -204,6 +206,7 @@ class FlatGraphs(Graphs):
             return self.generate(rng)
 
         circ2.verts_changed = set()
+        self.current_step += 1
         return circ1, circ2, self.n_qubits, self.n_depth
 
     def evaluate(self, src, tgt, hyp):

@@ -91,7 +91,11 @@ class PyzxEnvironment(object):
     def decode_class(self, i):
         if self.log_qubits_depth:
             return f"{i//100}/{i%100}"
-        return f"{i*100}-{(i+1)*100}"
+
+        step = 0
+        if hasattr(yi, "current_step"):
+            step = yi.current_step
+        return f"{step}: {i*100}-{(i+1)*100}"
 
     def code_class(self, xi, yi):
         if self.log_qubits_depth:
