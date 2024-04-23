@@ -109,6 +109,10 @@ class FlatGraphs(Graphs):
             return self.generate(rng)
 
         circ2.verts_changed = set()
+
+        circ1.current_step = self.current_step
+        circ2.current_step = self.current_step + 1
+
         self.current_step += 1
         return circ1, circ2, self.n_qubits, self.n_depth
 
