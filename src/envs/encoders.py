@@ -32,7 +32,10 @@ class Graph(Encoder):
         super().__init__()
         self.log_qubits_depth = params.log_qubits_depth
         self.precise = params.precise_vocab
-        self.symbols = [str(i) for i in range(params.max_int + 1)] + [f"N{i}" for i in range(params.max_nodes + 1)]
+        self.symbols = (
+            [str(i) for i in range(params.max_int + 1)] +
+            [f"N{i}" for i in range(params.max_nodes + 1)] +
+        )
         if self.precise:
             self.symbols.extend(["E1", "E2", "T0", "T1", "T2", "T3"])
 
@@ -44,8 +47,9 @@ class Graph(Encoder):
         nr_nodes = len( circ.types())
         assert nr_nodes == circ.num_vertices()
         nr_edges = circ.num_edges()
+        step = getattr(circ, "current_step", 0)
         if self.log_qubits_depth:
-            toks = [str(qubits), str(depth), str(nr_nodes), str(nr_edges)]
+            toks = [str(qubits), str(depth), str(step), str(nr_nodes), str(nr_edges)]
         else:
             toks = [str(nr_nodes), str(nr_edges)]
             
@@ -63,7 +67,7 @@ class Graph(Encoder):
         return toks
 
     def parse(self, lst):
-        offset = 2 if self.log_qubits_depth else 0
+        offset = 3 if self.log_qubits_depth else 0
         if len(lst) < 2 + offset:
             return None, 0
         graph = pyzx.Graph()

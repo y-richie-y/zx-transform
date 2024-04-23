@@ -90,16 +90,15 @@ class PyzxEnvironment(object):
 
     def decode_class(self, i):
         if self.log_qubits_depth:
-            return f"{i//100}/{i%100}"
-
-        step = 0
-        if hasattr(yi, "current_step"):
-            step = yi.current_step
-        return f"{step}: {i*100}-{(i+1)*100}"
+            d = i % 100
+            q = (i // 100) % 100
+            s = i // 10000
+            return f"{s=}/{q=}/{d=}"
+        return f"{i*100}-{(i+1)*100}"
 
     def code_class(self, xi, yi):
         if self.log_qubits_depth:
-            return int(xi[0]) * 100 + int(xi[1])
+            return int(xi[2]) * 10000 + int(xi[0]) * 100 + int(xi[1])
         return int(len(xi))//100
 
     def check_prediction(self, src, tgt, hyp):
