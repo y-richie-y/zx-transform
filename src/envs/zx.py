@@ -48,7 +48,6 @@ class PyzxEnvironment(object):
         self.max_len = params.max_len
         
         self.encoder = encoders.Graph(params)
-        self.generator = generators.Graphs(params)
         self.generator = generators.FlatGraphs(params)
         self.log_qubits_depth = params.log_qubits_depth
 

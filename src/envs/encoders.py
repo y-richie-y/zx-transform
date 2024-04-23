@@ -4,6 +4,7 @@ from random import random
 import pyzx
 from .diag_t import DiagT
 
+from src.envs.zx_utils import TrackingGraph, flat_reduce
 
 class Encoder(ABC):
     """
@@ -113,6 +114,7 @@ class Graph(Encoder):
         except Exception as e:
             #print(e)
             return None, 0
+        graph = TrackingGraph.upgrade(graph)
         return  graph, offset
 
 
