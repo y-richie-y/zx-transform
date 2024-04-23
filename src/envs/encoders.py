@@ -34,7 +34,7 @@ class Graph(Encoder):
         self.precise = params.precise_vocab
         self.symbols = (
             [str(i) for i in range(params.max_int + 1)] +
-            [f"N{i}" for i in range(params.max_nodes + 1)] +
+            [f"N{i}" for i in range(params.max_nodes + 1)]
         )
         if self.precise:
             self.symbols.extend(["E1", "E2", "T0", "T1", "T2", "T3"])
@@ -47,8 +47,8 @@ class Graph(Encoder):
         nr_nodes = len( circ.types())
         assert nr_nodes == circ.num_vertices()
         nr_edges = circ.num_edges()
-        step = getattr(circ, "current_step", 0)
         if self.log_qubits_depth:
+            step = circ.current_step
             toks = [str(qubits), str(depth), str(step), str(nr_nodes), str(nr_edges)]
         else:
             toks = [str(nr_nodes), str(nr_edges)]
