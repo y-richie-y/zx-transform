@@ -1,0 +1,6 @@
+argparse
+numpy
+pauliopt
+torch
+pyzx==0.9.0
+

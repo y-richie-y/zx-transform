@@ -30,7 +30,7 @@ class TrackingGraph(GraphS):
     def reset(self):
         self.verts_changed = set()
 
-    def set_type(self, vertex: VT, ty: VertexType.Type) -> None:
+    def set_type(self, vertex: VT, ty: VertexType) -> None:
         super().set_type(vertex, ty)
         self.verts_changed.add(vertex)
 
@@ -39,7 +39,7 @@ class TrackingGraph(GraphS):
         self.verts_changed.update(e)
 
     def add_vertex(self,
-                   ty:VertexType.Type=VertexType.BOUNDARY,
+                   ty:VertexType=VertexType.BOUNDARY,
                    qubit:FloatInt=-1,
                    row:FloatInt=-1,
                    phase:Optional[FractionLike]=None,
@@ -53,8 +53,8 @@ class TrackingGraph(GraphS):
         super().add_to_phase(vertex, phase)
         self.verts_changed.add(vertex)
 
-    def add_edges(self, edges, edgetype=EdgeType.SIMPLE, smart=False):
-        super().add_edges(edges, edgetype, smart)
+    def add_edges(self, edges, edgetype=EdgeType.SIMPLE):
+        super().add_edges(edges, edgetype)
         self.verts_changed.update(set([v for e in edges for v in e]))
 
     def add_vertices(self, amount):
